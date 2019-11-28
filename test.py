@@ -11,7 +11,7 @@ print("Hello, World.")
 
 for i in range(101):
     print(i)
-    i = i + 1
+    i = i + 2
     sleep(0.1)
 
 
