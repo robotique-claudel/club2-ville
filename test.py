@@ -11,7 +11,7 @@ from keras.layers import Dense,GlobalAveragePooling2D
 from keras.applications import MobileNet
 from keras.applications.mobilenet import preprocess_input
 import numpy as np
-from IPython.display import Image
+#from IPython.display import Image
 from keras.optimizers import Adam
 
 mobile = keras.applications.mobilenet.MobileNet()
