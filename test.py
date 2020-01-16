@@ -1,8 +1,8 @@
 import RPi.GPIO as GPIO
 import time
 
-GPIO.setmode(GPIO.BCM)
-PIR_PIN = 6
+GPIO.setmode(GPIO.BOARD)
+PIR_PIN = 31
 GPIO.setup(PIR_PIN, GPIO.IN)
 
 print("PIR Module Test (CTRL+C to exit)")
