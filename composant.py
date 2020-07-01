@@ -19,7 +19,6 @@ objets = []
 
 class Objet:
     def __init__(self, ids, *args, **kwargs):
-        self.ids = ids
         log.info("Nouveau objet %s", type(self))
         type_objet_connecte.append(type(self))
         objets.append(self)
@@ -30,7 +29,7 @@ class Objet:
     
 class ObjetIndependant(Objet):
     def __init__(self, ids, *args, **kwargs):
-        super().__init__(self, ids, *args, **kwargs)
+        super().__init__(self, self.ids, *args, **kwargs)  # pylint: disable=no-member
 
     def commence(self):
         x = threading.Thread(target=self.controlleur) #, daemon=True)
@@ -42,9 +41,10 @@ class ObjetIndependant(Objet):
 
 class Lampadaire(ObjetIndependant):
     def __init__(self, ids, *args, **kwargs):
-        self.id = ids
+        self.ids = ids
+        
         self.est_allume = False
-        super().__init__(self, ids, *args, **kwargs)
+        super().__init__(self, self.ids, *args, **kwargs)
 
     def allume(self):
         self.est_allume = True
@@ -62,7 +62,7 @@ class Lampadaire(ObjetIndependant):
                 self.eteind()
             elif num == 10:
                 self.allume()
-            sleep(0.1)
+            sleep(1)
 
 
 class FeuCirculation(Objet):
