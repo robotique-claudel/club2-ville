@@ -3,6 +3,7 @@ from itertools import count
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
+import dash_table as dt
 import dash_bootstrap_components as dbc
 import plotly.graph_objects as go
 from dash.dependencies import Input, Output
@@ -10,6 +11,7 @@ from dash.dependencies import Input, Output
 from composant import type_objet_connecte as oc
 from composant import objets as o
 from composant import Lampadaire
+
 
 colors = {
     'background': 'black',
@@ -116,7 +118,8 @@ INFO = html.Div([
 
 LAMPADAIRE = html.Div([
     html.H2("Lampadaires", style=PRIMARY_TEXT),
-    html.Br(), html.Div([
+    html.Br(),
+    html.Div([
         html.Div([
             dcc.Graph(id='lampadaire-on', animate=True),
         ], className="col-4 d-flex justify-content-center"),
@@ -127,6 +130,27 @@ LAMPADAIRE = html.Div([
             dcc.Graph(id='lampadaire-off', animate=True),
         ], className="col-4 d-flex justify-content-center"),
     ], className="row"),
+    html.Br(),
+    html.Br(),
+    dt.DataTable(
+        id='table-lamp',
+        style_header={
+            'backgroundColor': '#121212',
+            'fontWeight': 'bold',
+            'color': 'white',
+            'textAlign': 'center',
+            'fontSize': "16px",
+        },
+        style_cell={
+            'backgroundColor': '#121212',
+            'fontWeight': 'bold',
+            'color': 'white',
+            'textAlign': 'center',
+            'fontSize': "16px",
+        },
+        style_as_list_view=True,
+    )
+
 ])
 
 cpu_percents = []
@@ -227,7 +251,7 @@ def update_number_of_lampadaire_off(n):
         mode="gauge+number",
         value=value,
         domain={'x': [0, 1], 'y': [0, 1]},
-        title={'text': "Nombre de lampadaire allumé"},
+        title={'text': "Nombre de lampadaire éteind"},
         gauge={
             'axis': {
                 'range': [None, total],
@@ -239,6 +263,26 @@ def update_number_of_lampadaire_off(n):
 
     ), layout=transparent)
     return fig
+
+
+@app.callback(
+    [Output("table-lamp", "data"), Output('table-lamp', 'columns')],
+    [Input('interval-component', 'n_intervals')]
+)
+def updateTable(n):
+    columns = [
+        {"id": 0, "name": "ID"},
+        {"id": 1, "name": "Etat"},
+    ]
+    data = []
+    for i in o:
+        if isinstance(i, Lampadaire):
+            data.append({
+                0: str(i.ids),
+                1: "Allumé" if i.est_allume else "Éteint"
+            })
+
+    return data, columns
 
 
 @app.callback(
