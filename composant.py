@@ -1,7 +1,6 @@
 """
 Fichier contenants les objets
 """
-import json
 import logging
 import logging.config
 import os
@@ -17,6 +16,7 @@ os.system("clear")
 type_objet_connecte = []
 objets = []
 
+
 class Objet:
     def __init__(self, ids, *args, **kwargs):
         log.info("Nouveau objet %s", type(self))
@@ -26,38 +26,40 @@ class Objet:
 
     # def __str__(self):
     #     return f"{type(self)}-{self.id}"
-    
+
+
 class ObjetIndependant(Objet):
     def __init__(self, ids, *args, **kwargs):
-        super().__init__(self, self.ids, *args, **kwargs)  # pylint: disable=no-member
+        # pylint: disable=no-member
+        super().__init__(self, self.ids, *args, **kwargs)
 
     def commence(self):
-        x = threading.Thread(target=self.controlleur) #, daemon=True)
+        x = threading.Thread(target=self.controlleur)
         x.start()
 
     def controlleur(self):
         raise NotImplementedError
-    
+
 
 class Lampadaire(ObjetIndependant):
     def __init__(self, ids, *args, **kwargs):
         self.ids = ids
-        
+
         self.est_allume = False
         super().__init__(self, self.ids, *args, **kwargs)
 
     def allume(self):
         self.est_allume = True
         log.debug("Lampadaire est allume")
-        
+
     def eteind(self):
         self.est_allume = False
         log.debug("Lampadaire est eteind")
-        
-    def controlleur(self):   
-        log.debug("Controlleur a debute")     
+
+    def controlleur(self):
+        log.debug("Controlleur a debute")
         while True:
-            num = randint(1, 10) 
+            num = randint(1, 10)
             if num == 1:
                 self.eteind()
             elif num == 10:
@@ -71,15 +73,15 @@ class FeuCirculation(Objet):
         self.temps_orange = 3  # temps a passer sur l'orage
         self.ids = ids
         super().__init__(self, ids, *args, **kwargs)
-    
+
     def vert(self):
         self.etat = 1
-    
+
     def rouge(self):
-        x = threading.Thread(target=self._rougeOrange) #, daemon=True)
+        x = threading.Thread(target=self._rougeOrange)
         if self.etat == 1:
             x.start()
-    
+
     def _rougeOrange(self):
         self.etat = 2
         sleep(self.temps_orange)
@@ -94,7 +96,6 @@ class Intersection(Objet):
         self.ouest = ouest
         self.axes = [[nord, sud], [est, ouest]]
         self.ids = ids
-       
 
         for i in self.axes[0]:
             i.rouge()
@@ -115,8 +116,3 @@ class Intersection(Objet):
             sleep(3)
             for i in self.axes[0]:
                 i.vert()
-    
-    
-    
-    
-

@@ -1,14 +1,15 @@
 import unittest
-import sys 
+import sys
 
-sys.path.insert(0,'..')
+sys.path.insert(0, '..')
 # pylint: disable=import-error
-import composant
+import composant  # noqa: E402
+
 
 class TestLampadaire(unittest.TestCase):
     def test_allume(self):
-        l = composant.Lampadaire(1)
-        self.assertTrue(isinstance(l, composant.Lampadaire))
+        L = composant.Lampadaire(1)
+        self.assertTrue(isinstance(L, composant.Lampadaire))
 
 
 if __name__ == '__main__':

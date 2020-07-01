@@ -1,23 +1,15 @@
-import datetime
 from itertools import count
 
 import dash
 import dash_core_components as dcc
-import dash_daq as daq
 import dash_html_components as html
-import dash_table as dt
 import dash_bootstrap_components as dbc
-import plotly
 import plotly.graph_objects as go
-import plotly.subplots
-import plotly.express as px
 from dash.dependencies import Input, Output
-import pandas as pd
-import psutil
 
 from composant import type_objet_connecte as oc
 from composant import objets as o
-from composant import Intersection, FeuCirculation, Lampadaire
+from composant import Lampadaire
 
 colors = {
     'background': 'black',
@@ -102,7 +94,8 @@ content = html.Div(id="page-content", style=CONTENT_STYLE)
 
 
 app = dash.Dash(__name__, external_stylesheets=[
-                dbc.themes.BOOTSTRAP, "https://fonts.googleapis.com/css2?family=Roboto:wght@100&display=swap"],
+    dbc.themes.BOOTSTRAP,
+    "https://fonts.googleapis.com/css2?family=Roboto:wght@100&display=swap"],
                 meta_tags=[])
 app.layout = html.Div([dcc.Location(id="url"), sidebar, content])
 
@@ -113,7 +106,8 @@ INFO = html.Div([
     html.Div([
         html.Div([
             dcc.Graph(id='live-number-graph'),
-        ], className="col-6 d-flex justify-content-center", style={'text-align': 'center', 'margin-bottom': '10px'}),
+        ], className="col-6 d-flex justify-content-center",
+           style={'text-align': 'center', 'margin-bottom': '10px'}),
         html.Div([
             dcc.Graph(id='live-type-graph'),
         ], className="col-6 d-flex justify-content-center"),
@@ -206,7 +200,11 @@ def update_number_of_lampadaire_on(n):
         domain={'x': [0, 1], 'y': [0, 1]},
         title={'text': "Nombre de lampadaire allumé"},
         gauge={
-            'axis': {'range': [None, total], 'tickwidth': 1, 'tickcolor': "darkblue"},
+            'axis': {
+                'range': [None, total],
+                'tickwidth': 1,
+                'tickcolor': "darkblue"
+            },
             'bar': {'color': "lightblue"},
         },
     ), layout=transparent)
@@ -231,13 +229,16 @@ def update_number_of_lampadaire_off(n):
         domain={'x': [0, 1], 'y': [0, 1]},
         title={'text': "Nombre de lampadaire allumé"},
         gauge={
-            'axis': {'range': [None, total], 'tickwidth': 1, 'tickcolor': "darkblue"},
+            'axis': {
+                'range': [None, total],
+                'tickwidth': 1,
+                'tickcolor': "darkblue"
+            },
             'bar': {'color': "lightblue"},
         },
 
     ), layout=transparent)
     return fig
-
 
 
 @app.callback(
