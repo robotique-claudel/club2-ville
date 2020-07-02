@@ -251,7 +251,7 @@ def update_number_of_lampadaire_off(n):
         mode="gauge+number",
         value=value,
         domain={'x': [0, 1], 'y': [0, 1]},
-        title={'text': "Nombre de lampadaire éteind"},
+        title={'text': "Nombre de lampadaire éteint"},
         gauge={
             'axis': {
                 'range': [None, total],
@@ -273,13 +273,15 @@ def updateTable(n):
     columns = [
         {"id": 0, "name": "ID"},
         {"id": 1, "name": "Etat"},
+        {"id": 2, "name": "Pin"},
     ]
     data = []
     for i in o:
         if isinstance(i, Lampadaire):
             data.append({
                 0: str(i.ids),
-                1: "Allumé" if i.est_allume else "Éteint"
+                1: "Allumé" if i.est_allume else "Éteint",
+                2: str(i.pin)
             })
 
     return data, columns
