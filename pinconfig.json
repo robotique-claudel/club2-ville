@@ -1,0 +1,30 @@
+{
+    "/dev/ttyACM0": {
+        "pins":  [
+            {
+                "pinNum": 11,
+                "type": "lampadaire",
+                "id": 1
+            },
+            {
+                "pinNum": 12,
+                "type": "lampadaire",
+                "id": 2
+            }
+        ]
+    },
+    "/dev/ttyACM1": {
+        "pins": [
+            {
+                "pinNum": 11,
+                "type": "lampadaire",
+                "id": 3
+            },
+            {
+                "pinNum": 12,
+                "type": "lampadaire",
+                "id": 4
+            }
+        ]
+    }
+}

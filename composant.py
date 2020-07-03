@@ -24,6 +24,10 @@ class Objet:
         objets.append(self)
         pass
 
+    def commande(self, com, ser):
+        ser.write(com.encode())
+        log.debug("Envoie de la commande: %s", com)
+
     # def __str__(self):
     #     return f"{type(self)}-{self.id}"
 
@@ -42,17 +46,25 @@ class ObjetIndependant(Objet):
 
 
 class Lampadaire(ObjetIndependant):
-    def __init__(self, ids, *args, **kwargs):
+    def __init__(self, ids, pin, ser=None, *args, **kwargs):
         self.ids = ids
+        self.pin = pin
+        self.ser = ser
 
         self.est_allume = False
         super().__init__(self, self.ids, *args, **kwargs)
 
     def allume(self):
+        com = f"CMD {self.pin} 1"
+        self.commande(com, self.ser)
+
         self.est_allume = True
         log.debug("Lampadaire est allume")
 
     def eteind(self):
+        com = f"CMD {self.pin} 0"
+        self.commande(com, self.ser)
+
         self.est_allume = False
         log.debug("Lampadaire est eteind")
 
