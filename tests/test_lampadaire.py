@@ -8,7 +8,7 @@ import composant  # noqa: E402
 
 class TestLampadaire(unittest.TestCase):
     def test_allume(self):
-        L = composant.Lampadaire(1)
+        L = composant.Lampadaire(1, 11)
         self.assertTrue(isinstance(L, composant.Lampadaire))
 
 
