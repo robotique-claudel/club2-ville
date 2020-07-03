@@ -1,6 +1,6 @@
 {
     "/dev/ttyACM0": {
-        "pins":  [
+        "pins": [
             {
                 "pinNum": 11,
                 "type": "lampadaire",
