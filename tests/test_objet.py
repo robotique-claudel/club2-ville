@@ -19,7 +19,7 @@ class TestObjetIndependant(unittest.TestCase):
 
     def test_independance(self):
         o = composant.ObjetIndependant(1)
-        self.assertRaises(NotImplementedError, o.commence())
+        self.assertRaises(NotImplementedError, o.controlleur)
 
 
 if __name__ == '__main__':  # pragma: no cover
