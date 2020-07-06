@@ -34,6 +34,7 @@ class Objet:
 
 class ObjetIndependant(Objet):
     def __init__(self, ids, *args, **kwargs):
+        self.ids = ids
         # pylint: disable=no-member
         super().__init__(self, self.ids, *args, **kwargs)
 

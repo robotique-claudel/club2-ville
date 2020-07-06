@@ -12,5 +12,5 @@ class TestLampadaire(unittest.TestCase):
         self.assertTrue(isinstance(L, composant.Lampadaire))
 
 
-if __name__ == '__main__':
+if __name__ == '__main__':  # pragma: no cover
     unittest.main()
