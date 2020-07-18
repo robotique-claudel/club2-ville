@@ -1,0 +1,95 @@
+version: '3.4'
+
+x-logging:
+  &default-logging
+  driver: loki
+  options:
+    loki-url: "http://host.docker.internal:3100/loki/api/v1/push"
+
+
+
+services:  
+  redis:
+    logging: *default-logging
+    image: redis
+    restart: always
+    container_name: redis-server
+    ports:
+      - 6379:6379
+
+  psql:
+    logging: *default-logging
+    image: postgres
+    restart: always
+    container_name: psql
+    environment:
+      POSTGRES_USER: psqluser
+      POSTGRES_PASSWORD: psqlpass
+      POSTGRES_DB: db
+  
+  web:
+    logging: *default-logging
+    image: web
+    restart: always
+    container_name: webserver
+    environment:
+      - DJANGO_SECRET_KEY=local
+    build: ./
+    command: >
+      bash -c "ville/manage.py migrate &&
+               ville/manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - ./:/code
+    ports:
+      - 8000:8000
+    depends_on:
+      - psql
+      - redis
+
+
+  grafana:
+    logging: *default-logging
+    image: grafana/grafana
+    container_name: grafana
+    restart: always
+    ports:
+      - 3000:3000
+    volumes:
+      - ./var/lib/grafana/:/var/lib/grafana
+    
+  
+  
+  influxdb:
+    logging: *default-logging
+    image: influxdb
+    container_name: influxdb
+    restart: always
+    ports:
+      - 8086:8086
+    environment:
+      - INFLUXDB_DB=telegraf
+      - INFLUXDB_USER=telegraf
+      - INFLUXDB_ADMIN_ENABLED=true
+
+      - INFLUXDB_ADMIN_USER=admin
+      - INFLUXDB_ADMIN_PASSWORD=Welcome1 
+
+  loki:
+    logging: *default-logging
+    image: grafana/loki
+    container_name: loki
+    ports:
+      - 3100:3100
+    volumes: 
+      - ./:/config
+    command: -config.file=/config/config-loki.yml
+
+  # promtail:
+  #   # logging: *default-logging
+  #   image: grafana/promtail
+  #   volumes:
+  #     - /var/log:/var/log
+  #     - ./:/config
+  #   command: -config.file=/config/config-prom.yml
+  #   ports:
+  #    - 9080:9080
