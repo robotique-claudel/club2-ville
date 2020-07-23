@@ -4,6 +4,8 @@ env/
 __pycache__/
 htmlcov/
 var/
+html/
+latex/
 
 dump.rdb
 .coverage

@@ -2,6 +2,8 @@ TODO
 
 Install log driver:
  - `docker plugin install grafana/loki-docker-driver:latest --alias loki --grant-all-permissions`
+ARM
+ - `grafana/loki-docker-driver:arm-v7`
 
 Build:
  - `docker-compose up --build [-d]`
@@ -14,4 +16,4 @@ Test:
  - `coverage html`
 
 Queries: 
- - `SELECT "duration" FROM "autogen"."sensor_value" WHERE $timeFilter`
+ - `SELECT "temperature" FROM "temphum"."autogen"."temperature-humidite"`

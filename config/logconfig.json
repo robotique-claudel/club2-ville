@@ -33,7 +33,7 @@
             "handlers": [
                 "default"
             ],
-            "level": "INFO",
+            "level": "DEBUG",
             "propagate": false
         },
         "daphne.http_protocol": {

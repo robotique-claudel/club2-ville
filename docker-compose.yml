@@ -36,8 +36,9 @@ services:
       - DJANGO_SECRET_KEY=local
     build: ./
     command: >
-      bash -c "ville/manage.py migrate &&
-               ville/manage.py runserver 0.0.0.0:8000"
+      python3 senseur.py
+#      bash -c "ville/manage.py migrate &&
+#               ville/manage.py runserver 0.0.0.0:8000"
     volumes:
       - ./:/code
     ports:
@@ -78,10 +79,11 @@ services:
     logging: *default-logging
     image: grafana/loki
     container_name: loki
+    restart: always
     ports:
       - 3100:3100
     volumes: 
-      - ./:/config
+      - ./config:/config
     command: -config.file=/config/config-loki.yml
 
   # promtail:
