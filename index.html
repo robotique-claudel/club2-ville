@@ -31,11 +31,29 @@ $(function() {
 /* @license-end */</script>
 <div id="main-nav"></div>
 </div><!-- top -->
-<div class="header">
+<div class="PageDoc"><div class="header">
   <div class="headertitle">
 <div class="title">club2-ville Documentation</div>  </div>
 </div><!--header-->
 <div class="contents">
+<div class="textblock"><p><a class="anchor" id="md_README"></a>TODO</p>
+<p>Install log driver:</p><ul>
+<li><code>docker plugin install grafana/loki-docker-driver:latest --alias loki --grant-all-permissions</code> ARM</li>
+<li><code>grafana/loki-docker-driver:arm-v7</code></li>
+</ul>
+<p>Build:</p><ul>
+<li><code>docker-compose up --build [-d]</code></li>
+<li><code>docker-compose up</code></li>
+</ul>
+<p>Test:</p><ul>
+<li><code>python3 -m unittest discover tests/</code></li>
+<li><code>coverage run -m unittest discover tests/</code></li>
+<li><code>coverage html</code></li>
+</ul>
+<p>Queries:</p><ul>
+<li><code>SELECT "temperature" FROM "temphum"."autogen"."temperature-humidite"</code> </li>
+</ul>
+</div></div><!-- PageDoc -->
 </div><!-- contents -->
 <!-- HTML footer for doxygen 1.8.18-->
 <!-- start footer part -->
