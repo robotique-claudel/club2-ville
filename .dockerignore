@@ -6,4 +6,8 @@ htmlcov/
 html/
 latex/
 
+gfdata/
+influxdata/
+collectdata/
+
 .coverage

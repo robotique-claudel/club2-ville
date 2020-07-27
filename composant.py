@@ -50,16 +50,30 @@ class Objet:
         Returns:
             None
         """
-        log.info("Nouveau objet %s", type(self))
+        log.info("Nouveau objet %s", self.ids)
         type_objet_connecte.append(type(self))
         objets.append(self)
 
-    def commande(self, com, ser):
-        ser.write(com.encode())
-        log.debug("Envoie de la commande: %s", com)
+    def commande(self, pinstr, comstr, setto=None):
+        uri = ""
+        if setto is not None:
+            uri = f"/{pinstr}/{comstr}/{setto}"
+        else:
+            uri = f"/{pinstr}/{comstr}"
+        url = ARDUINO_URL + uri
+        log.debug("Envoie de la commande: %s", url)
+        res = requests.get(url)
 
-    # def __str__(self):
-    #     return f"{type(self)}-{self.id}"
+        strres = res.content
+        strres = strres.decode('UTF-8')
+        strres = strres.replace('\n',  '')
+        strres = strres.replace('\r', '')
+
+        obj = json.loads(strres)
+        return obj
+
+    def __str__(self):
+        return f"{type(self)}-{self.ids}"
 
 
 class ObjetIndependant(Objet):
@@ -88,7 +102,7 @@ class ObjetIndependant(Objet):
         """
         self.ids = ids
         # pylint: disable=no-member
-        super().__init__(self, self.ids, *args, **kwargs)
+        super().__init__(self.ids, *args, **kwargs)
 
     def commence(self):
         """
@@ -139,19 +153,21 @@ class Senseur(ObjetIndependant):
     Returns:
         None
     """
-    def __init__(self, ids, pin, intervalle, *args, **kwargs):
+    def __init__(self, ids, pin, intervalle, measurement, *args, **kwargs):
         """
         Crée un nouveau Senseur
 
         Cette fonction initialise un nouveau Senseur
 
         Args:
-            ids:        Un id unique pour identifier l'objet
-            pin:        Le pin sur lequel le capteur est attaché sur
-                        le microcontrolleur
-            intervalle: L'intervalle entre la collecte de l'information
-                        en secondes
-            args:       Des arguments supplémentaires
+            ids:          Un id unique pour identifier l'objet
+            pin:          Le pin sur lequel le capteur est attaché sur
+                          le microcontrolleur
+            intervalle:   L'intervalle entre la collecte de l'information
+                           en secondes
+            measurement:  Le nom de ce qui est mesuré telle qu'il doit
+                          apparaitre dans la base de donné
+            args:         Des arguments supplémentaires
 
         Kwargs:
             kwargs:  Des arguments supplémentaires sous la forme `foo=bar`
@@ -162,8 +178,9 @@ class Senseur(ObjetIndependant):
         self.ids = ids
         self.pin = pin
         self.intervalle = intervalle
+        self.measurement = measurement
         # pylint: disable=no-member
-        super().__init__(self, self.ids, *args, **kwargs)
+        super().__init__(self.ids, *args, **kwargs)
 
     def collection(self):
         """
@@ -201,7 +218,7 @@ class SenseurTempHum(Senseur):
     """
     La classe qui represente un capteur de temperature DHT-11
     """
-    def __init__(self,  ids, pin, intervalle, *args, **kwargs):
+    def __init__(self, ids, pin, intervalle, measurement, *args, **kwargs):
         """
         Cree un nouveau SenseurTempHum
         Args:
@@ -217,7 +234,8 @@ class SenseurTempHum(Senseur):
         self.pin = pin
         self.intervalle = intervalle
         # pylint: disable=no-member
-        super().__init__(self.ids, self.pin, intervalle, *args, **kwargs)
+        super().__init__(self.ids, self.pin, intervalle, measurement,
+                         *args, **kwargs)
 
     def collection(self):
         """
@@ -231,24 +249,24 @@ class SenseurTempHum(Senseur):
         Returns:
             None
         """
-        dbname = "temphum"
-        url = ARDUINO_URL + f"/{self.pin}/read"
-        res = requests.get(url)
+        dbname = "db"
+        obj = self.commande(self.pin, 'read')
+        try:
+            dbs = client.get_list_database()
+        except requests.exceptions.ConnectionError:
+            log.warning("Waiting for InfluxDB to wake up")
+            sleep(0.5)
+            return None
 
-        strres = res.content
-        strres = strres.decode('UTF-8')
-        strres = strres.replace('\n',  '')
-        strres = strres.replace('\r', '')
-
-        obj = json.loads(strres)
-        if {'name': dbname} not in client.get_list_database():
+        if {'name': dbname} not in dbs:
             client.create_database(dbname)
         client.switch_database(dbname)
 
         json_body = [{
-            'measurement': 'temperature-humidite',
+            'measurement': self.measurement,
             'tags': {
                 'node': self.ids,
+                'pin': obj['pinNum'],
                 'status': obj['status']
             },
             'datetime': str(datetime.now()),
@@ -257,8 +275,8 @@ class SenseurTempHum(Senseur):
                 'humidite': obj['value']['h']
             }
         }]
+        log.debug(json_body)
         client.write_points(json_body)
-        log.debug(obj['value']['t'], obj['value']['h'])
 
 
 class Lampadaire(ObjetIndependant):
@@ -279,7 +297,7 @@ class Lampadaire(ObjetIndependant):
         self.ser = ser
 
         self.est_allume = False
-        super().__init__(self, self.ids, *args, **kwargs)
+        super().__init__(self.ids, *args, **kwargs)
 
     def allume(self):
         """
@@ -338,7 +356,7 @@ class FeuCirculation(Objet):
         self.etat = 3  # 1: vert, 2: orange, 3: rouge
         self.temps_orange = 3  # temps a passer sur l'orage
         self.ids = ids
-        super().__init__(self, ids, *args, **kwargs)
+        super().__init__(ids, *args, **kwargs)
 
     def vert(self):
         """
@@ -395,7 +413,7 @@ class Intersection(Objet):
             i.rouge()
         for i in self.axes[1]:
             i.vert()
-        super().__init__(self, id, *args, **kwargs)
+        super().__init__(ids, *args, **kwargs)
 
     def changeAxe(self):
         """
