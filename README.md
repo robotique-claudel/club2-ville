@@ -12,7 +12,7 @@ Build:
 
 Test: 
  - `python3 -m unittest discover tests/`
- - `coverage run -m unittest discover tests/`
+ - `python3 -m coverage run --omit env/ -m unittest discover tests/`
  - `coverage html`
 
 Queries: 

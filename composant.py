@@ -50,7 +50,7 @@ class Objet:
         Returns:
             None
         """
-        log.info("Nouveau objet %s", self.ids)
+        log.info("Nouveau objet %s", ids)
         type_objet_connecte.append(type(self))
         objets.append(self)
 
@@ -305,8 +305,7 @@ class Lampadaire(ObjetIndependant):
 
         Envoie un signal au micro-controlleur pour allumer la led
         """
-        com = f"CMD {self.pin} 1"
-        self.commande(com, self.ser)
+        self.commande(self.pin, 'set', 1)
 
         self.est_allume = True
         log.debug("Lampadaire est allume")
@@ -317,8 +316,7 @@ class Lampadaire(ObjetIndependant):
 
         Envoie un signal au micro-controlleur pour éteindre la led
         """
-        com = f"CMD {self.pin} 0"
-        self.commande(com, self.ser)
+        self.commande(self.pin, 'set', 0)
 
         self.est_allume = False
         log.debug("Lampadaire est eteind")
